@@ -1,9 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
+
+type Entry = {
+  id: string;
+  tz: string;
+  label: string;
+};
 
 const STORAGE_KEY = "timezones:data";
 
-function defaultEntry() {
+function defaultEntry(): Entry {
   return {
     id: Date.now().toString(36),
     tz: DateTime.local().zoneName,
@@ -11,54 +17,49 @@ function defaultEntry() {
   };
 }
 
-function encodeState(data) {
+function encodeState(data: Entry[]) {
   return encodeURIComponent(btoa(JSON.stringify(data)));
 }
 
-function decodeState(s) {
+function decodeState(s: string) {
   try {
-    return JSON.parse(atob(decodeURIComponent(s)));
+    return JSON.parse(atob(decodeURIComponent(s))) as Entry[];
   } catch (e) {
     console.error(e);
     return null;
   }
 }
 
-export default function App() {
-  const [entries, setEntries] = useState(() => {
-    // try loading from URL first
+export default function App(): JSX.Element {
+  const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
     if (data) {
       const decoded = decodeState(data);
       if (decoded && Array.isArray(decoded)) return decoded;
     }
-
-    // fallback to localStorage if no data found in URL
     try {
-      const cachedData = localStorage.getItem(STORAGE_KEY);
-      if (cachedData) return JSON.parse(cachedData);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw) as Entry[];
     } catch (e) {}
     return [defaultEntry()];
   });
 
-  const [now, setNow] = useState(Date.now());
-  const saveTimer = useRef(null);
+  const [now, setNow] = useState<number>(Date.now());
+  const saveTimer = useRef<number | null>(null);
 
-  // realtime clock
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(interval);
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
   }, []);
 
-  // autosave to localStorage (debounced)
   useEffect(() => {
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
+    if (saveTimer.current) window.clearTimeout(saveTimer.current);
+    saveTimer.current = window.setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     }, 250);
     return () => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
+      if (saveTimer.current) window.clearTimeout(saveTimer.current);
     };
   }, [entries]);
 
@@ -69,11 +70,11 @@ export default function App() {
     ]);
   }
 
-  function updateEntry(id, patch) {
+  function updateEntry(id: string, patch: Partial<Entry>) {
     setEntries((e) => e.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   }
 
-  function removeEntry(id) {
+  function removeEntry(id: string) {
     setEntries((e) => e.filter((x) => x.id !== id));
   }
 
@@ -126,15 +127,11 @@ export default function App() {
                     updateEntry(entry.id, { tz: e.target.value })
                   }
                 >
-                  {Intl.supportedValuesOf &&
-                    Intl.supportedValuesOf("timeZone").map((tz) => (
-                      <option key={tz} value={tz}>
-                        {tz}
-                      </option>
-                    ))}
-                  {!Intl.supportedValuesOf && (
-                    <option value={entry.tz}>{entry.tz}</option>
-                  )}
+                  {Intl.supportedValuesOf("timeZone").map((tz: string) => (
+                    <option key={tz} value={tz}>
+                      {tz}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="card-body">
