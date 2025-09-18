@@ -1,6 +1,6 @@
 {
   "name": "timezones-app",
-  "homepage": "https://glitch-dot-cool.github.io/tz-sync",
+  "homepage": "https://timezones.glitch.cool",
   "version": "0.1.0",
   "private": true,
   "scripts": {
