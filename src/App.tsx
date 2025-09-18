@@ -141,6 +141,22 @@ export default function App(): JSX.Element {
                     .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}
                 </div>
                 <div className="tz-info">{entry.tz}</div>
+
+                {/* Timeline: 12 one-hour blocks starting at 'now' for this timezone */}
+                <div className="timeline" aria-hidden>
+                  {Array.from({ length: 12 }).map((_, i) => {
+                    const dt = DateTime.fromMillis(now)
+                      .setZone(entry.tz)
+                      .plus({ hours: i });
+                    const label = dt.toFormat("HH:mm");
+                    return (
+                      <div className="block" key={i} title={dt.toISO()}>
+                        <div className="block-time">{label}</div>
+                        <div className="block-hour">{dt.toFormat("ha")}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div className="card-footer">
                 <button onClick={() => removeEntry(entry.id)}>Delete</button>
