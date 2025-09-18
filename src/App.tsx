@@ -8,6 +8,7 @@ type Entry = {
 };
 
 const STORAGE_KEY = "timezones:data";
+const HOUR_RANGE = 12;
 
 function defaultEntry(): Entry {
   return {
@@ -86,7 +87,7 @@ export default function App(): JSX.Element {
   }
 
   return (
-    <div className="app">
+    <>
       <header>
         <h1>Timezones</h1>
         <div className="controls">
@@ -101,8 +102,10 @@ export default function App(): JSX.Element {
           </button>
           <button
             onClick={() => {
-              localStorage.removeItem(STORAGE_KEY);
-              setEntries([defaultEntry()]);
+              if (confirm("are you sure you want to reset all entries?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                setEntries([defaultEntry()]);
+              }
             }}
           >
             Reset
@@ -133,6 +136,17 @@ export default function App(): JSX.Element {
                     </option>
                   ))}
                 </select>
+                <button
+                  onClick={() => {
+                    if (
+                      confirm(`are you sure you want to delete ${entry.label}?`)
+                    ) {
+                      removeEntry(entry.id);
+                    }
+                  }}
+                >
+                  Delete
+                </button>
               </div>
               <div className="card-body">
                 <div className="time">
@@ -142,36 +156,29 @@ export default function App(): JSX.Element {
                 </div>
                 <div className="tz-info">{entry.tz}</div>
 
-                {/* Timeline: 12 one-hour blocks starting at 'now' for this timezone */}
                 <div className="timeline" aria-hidden>
-                  {Array.from({ length: 12 }).map((_, i) => {
+                  {Array.from({ length: HOUR_RANGE }).map((_, i) => {
                     const dt = DateTime.fromMillis(now)
                       .setZone(entry.tz)
                       .plus({ hours: i });
                     const label = dt.toFormat("HH:mm");
                     return (
-                      <div className="block" key={i} title={dt.toISO()}>
-                        <div className="block-time">{label}</div>
-                        <div className="block-hour">{dt.toFormat("ha")}</div>
+                      <div
+                        className={`block ${i === 0 ? "block-current" : ""}`}
+                        key={i}
+                        title={dt.toISO()}
+                      >
+                        <p className="block-time">{label}</p>
+                        <p className="block-hour">{dt.toFormat("ha")}</p>
                       </div>
                     );
                   })}
                 </div>
               </div>
-              <div className="card-footer">
-                <button onClick={() => removeEntry(entry.id)}>Delete</button>
-              </div>
             </div>
           ))}
         </div>
       </main>
-
-      <footer>
-        <small>
-          Local changes autosave to localStorage. Sharing encodes data in the
-          URL.
-        </small>
-      </footer>
-    </div>
+    </>
   );
 }
