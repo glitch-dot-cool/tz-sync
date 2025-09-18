@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
+import { useSyncedScroll } from "./useSynchronizedScroll";
 
 type Entry = {
   id: string;
@@ -8,7 +9,7 @@ type Entry = {
 };
 
 const STORAGE_KEY = "timezones:data";
-const HOUR_RANGE = 12;
+const HOUR_RANGE = 24;
 
 function defaultEntry(): Entry {
   return {
@@ -32,6 +33,7 @@ function decodeState(s: string) {
 }
 
 export default function App(): JSX.Element {
+  const register = useSyncedScroll<HTMLDivElement>();
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
@@ -156,7 +158,7 @@ export default function App(): JSX.Element {
                 </div>
                 <div className="tz-info">{entry.tz}</div>
 
-                <div className="timeline" aria-hidden>
+                <div className="timeline" aria-hidden ref={register}>
                   {Array.from({ length: HOUR_RANGE }).map((_, i) => {
                     const dt = DateTime.fromMillis(now)
                       .setZone(entry.tz)
@@ -166,7 +168,7 @@ export default function App(): JSX.Element {
                       <div
                         className={`block ${i === 0 ? "block-current" : ""}`}
                         key={i}
-                        title={dt.toISO()}
+                        title={dt.toISO() || ""}
                       >
                         <p className="block-time">{label}</p>
                         <p className="block-hour">{dt.toFormat("ha")}</p>
