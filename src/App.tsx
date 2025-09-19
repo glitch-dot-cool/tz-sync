@@ -34,6 +34,7 @@ function decodeState(s: string) {
 
 export default function App(): JSX.Element {
   const register = useSyncedScroll<HTMLDivElement>();
+  const [filter, setFilter] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
@@ -50,6 +51,10 @@ export default function App(): JSX.Element {
 
   const [now, setNow] = useState<number>(Date.now());
   const saveTimer = useRef<number | null>(null);
+
+  const timezones = Intl.supportedValuesOf("timeZone").filter((tz: string) =>
+    tz.toLowerCase().includes(filter.toLowerCase())
+  );
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -112,6 +117,12 @@ export default function App(): JSX.Element {
           >
             Reset
           </button>
+          <input
+            type="text"
+            placeholder="Filter timezones"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
         </div>
       </header>
 
@@ -132,7 +143,7 @@ export default function App(): JSX.Element {
                     updateEntry(entry.id, { tz: e.target.value })
                   }
                 >
-                  {Intl.supportedValuesOf("timeZone").map((tz: string) => (
+                  {timezones.map((tz: string) => (
                     <option key={tz} value={tz}>
                       {tz}
                     </option>
