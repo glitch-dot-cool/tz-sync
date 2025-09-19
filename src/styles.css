@@ -44,8 +44,11 @@ header {
   justify-content: space-between;
 }
 
-.controls button,
-input {
+input:not:first-child {
+  margin-left: 8px;
+}
+
+.controls button {
   margin-left: 8px;
 }
 
@@ -71,8 +74,10 @@ input {
   margin-bottom: 8px;
 }
 
-.card-header input {
+.card-header input,
+.card-header select {
   flex: 1;
+  min-width: 10ch;
 }
 
 .card-body {
@@ -86,6 +91,10 @@ input {
 .time,
 .tz-info {
   font-family: Roboto Mono;
+}
+
+.destructive:hover {
+  color: red;
 }
 
 /* Timeline styles */

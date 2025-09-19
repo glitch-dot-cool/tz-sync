@@ -1,21 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useSyncedScroll } from "./useSynchronizedScroll";
+import { getTimeZones } from "@vvo/tzdb";
+import { Entry } from "./Entry";
 
-type Entry = {
+export type Entry = {
   id: string;
   tz: string;
   label: string;
+  query: string;
+};
+
+export type SearchableZone = {
+  zoneName: string;
+  city: string;
+  display: string;
 };
 
 const STORAGE_KEY = "timezones:data";
-const HOUR_RANGE = 24;
 
 function defaultEntry(): Entry {
   return {
     id: Date.now().toString(36),
     tz: DateTime.local().zoneName,
     label: "Local",
+    query: "",
   };
 }
 
@@ -32,9 +41,11 @@ function decodeState(s: string) {
   }
 }
 
+const timezones = getTimeZones();
+
 export default function App(): JSX.Element {
   const register = useSyncedScroll<HTMLDivElement>();
-  const [filter, setFilter] = useState<string>("");
+  const [now, setNow] = useState<number>(Date.now());
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
@@ -49,11 +60,14 @@ export default function App(): JSX.Element {
     return [defaultEntry()];
   });
 
-  const [now, setNow] = useState<number>(Date.now());
   const saveTimer = useRef<number | null>(null);
 
-  const timezones = Intl.supportedValuesOf("timeZone").filter((tz: string) =>
-    tz.toLowerCase().includes(filter.toLowerCase())
+  const searchableZones: SearchableZone[] = timezones.flatMap((tz) =>
+    tz.mainCities.map((city) => ({
+      zoneName: tz.name,
+      city,
+      display: `${city} (${tz.alternativeName || tz.name})`,
+    }))
   );
 
   useEffect(() => {
@@ -74,7 +88,7 @@ export default function App(): JSX.Element {
   function addEntry() {
     setEntries((e) => [
       ...e,
-      { id: Date.now().toString(36), tz: "UTC", label: "New" },
+      { id: Date.now().toString(36), tz: "UTC", label: "", query: "" },
     ]);
   }
 
@@ -89,7 +103,7 @@ export default function App(): JSX.Element {
   function shareUrl() {
     const data = encodeState(entries);
     const url = `${location.origin}${location.pathname}?data=${data}`;
-    navigator.clipboard?.writeText(url);
+    navigator.clipboard.writeText(url);
     return url;
   }
 
@@ -98,7 +112,7 @@ export default function App(): JSX.Element {
       <header>
         <h1>Timezones</h1>
         <div className="controls">
-          <button onClick={addEntry}>Add timezone</button>
+          <button onClick={addEntry}>Add entry</button>
           <button
             onClick={() => {
               const url = shareUrl();
@@ -108,6 +122,7 @@ export default function App(): JSX.Element {
             Share
           </button>
           <button
+            className="destructive"
             onClick={() => {
               if (confirm("are you sure you want to reset all entries?")) {
                 localStorage.removeItem(STORAGE_KEY);
@@ -117,78 +132,21 @@ export default function App(): JSX.Element {
           >
             Reset
           </button>
-          <input
-            type="text"
-            placeholder="Filter timezones"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          />
         </div>
       </header>
 
       <main>
         <div className="columns">
           {entries.map((entry) => (
-            <div className="card" key={entry.id}>
-              <div className="card-header">
-                <input
-                  value={entry.label}
-                  onChange={(e) =>
-                    updateEntry(entry.id, { label: e.target.value })
-                  }
-                />
-                <select
-                  value={entry.tz}
-                  onChange={(e) =>
-                    updateEntry(entry.id, { tz: e.target.value })
-                  }
-                >
-                  {timezones.map((tz: string) => (
-                    <option key={tz} value={tz}>
-                      {tz}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => {
-                    if (
-                      confirm(`are you sure you want to delete ${entry.label}?`)
-                    ) {
-                      removeEntry(entry.id);
-                    }
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-              <div className="card-body">
-                <div className="time">
-                  {DateTime.fromMillis(now)
-                    .setZone(entry.tz)
-                    .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}
-                </div>
-                <div className="tz-info">{entry.tz}</div>
-
-                <div className="timeline" aria-hidden ref={register}>
-                  {Array.from({ length: HOUR_RANGE }).map((_, i) => {
-                    const dt = DateTime.fromMillis(now)
-                      .setZone(entry.tz)
-                      .plus({ hours: i });
-                    const label = dt.toFormat("HH:mm");
-                    return (
-                      <div
-                        className={`block ${i === 0 ? "block-current" : ""}`}
-                        key={i}
-                        title={dt.toISO() || ""}
-                      >
-                        <p className="block-time">{label}</p>
-                        <p className="block-hour">{dt.toFormat("ha")}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+            <Entry
+              key={entry.id}
+              entry={entry}
+              searchableZones={searchableZones}
+              updateEntry={updateEntry}
+              removeEntry={removeEntry}
+              register={register}
+              now={now}
+            />
           ))}
         </div>
       </main>
