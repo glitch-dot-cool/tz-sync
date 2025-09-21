@@ -9,6 +9,8 @@ interface EntryProps {
   searchableZones: SearchableZone[];
   register: (el: HTMLDivElement | null) => void;
   now: number;
+  selectedHourIndex: number;
+  setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const HOUR_RANGE = 24;
@@ -20,6 +22,8 @@ export const Entry = ({
   removeEntry,
   register,
   now,
+  selectedHourIndex,
+  setSelectedHourIndex,
 }: EntryProps) => {
   const [filter, setFilter] = useState<string>("");
 
@@ -98,14 +102,17 @@ export const Entry = ({
               .plus({ hours: i });
             const label = dt.toFormat("HH:mm");
             return (
-              <div
-                className={`block ${i === 0 ? "block-current" : ""}`}
+              <button
+                className={`block ${
+                  i === selectedHourIndex ? "block-current" : ""
+                }`}
                 key={i}
                 title={dt.toISO() || ""}
+                onClick={() => setSelectedHourIndex(i)}
               >
                 <p className="block-time">{label}</p>
                 <p className="block-hour">{dt.toFormat("ha")}</p>
-              </div>
+              </button>
             );
           })}
         </div>

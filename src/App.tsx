@@ -46,6 +46,7 @@ const timezones = getTimeZones();
 export default function App(): JSX.Element {
   const register = useSyncedScroll<HTMLDivElement>();
   const [now, setNow] = useState<number>(Date.now());
+  const [selectedHourIndex, setSelectedHourIndex] = useState(0);
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
@@ -146,6 +147,8 @@ export default function App(): JSX.Element {
               removeEntry={removeEntry}
               register={register}
               now={now}
+              selectedHourIndex={selectedHourIndex}
+              setSelectedHourIndex={setSelectedHourIndex}
             />
           ))}
         </div>
