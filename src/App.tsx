@@ -120,11 +120,13 @@ export default function App(): JSX.Element {
     return url;
   }
 
-  const sortedEntries = useMemo(() => {
-    return entries.sort((a, b) => {
-      return a.offsetInMinutes - b.offsetInMinutes;
-    });
-  }, [entries]);
+  const sortEntries = () => {
+    setEntries((entries) =>
+      entries.sort((a, b) => {
+        return a.offsetInMinutes - b.offsetInMinutes;
+      })
+    );
+  };
 
   return (
     <>
@@ -132,6 +134,7 @@ export default function App(): JSX.Element {
         <h1>Timezones</h1>
         <div className="controls">
           <button onClick={addEntry}>Add entry</button>
+          <button onClick={sortEntries}>Sort</button>
           <button
             onClick={() => {
               const url = shareUrl();
@@ -156,7 +159,7 @@ export default function App(): JSX.Element {
 
       <main>
         <div className="columns">
-          {sortedEntries.map((entry) => (
+          {entries.map((entry) => (
             <Entry
               key={entry.id}
               entry={entry}
