@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useSyncedScroll } from "./useSynchronizedScroll";
 import { getTimeZones } from "@vvo/tzdb";

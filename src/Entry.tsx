@@ -105,7 +105,7 @@ export const Entry = ({
         <div className="time">
           {DateTime.fromMillis(now)
             .setZone(entry.tz)
-            .toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}
+            .toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}
         </div>
         <div className="tz-info">{entry.tz}</div>
 
