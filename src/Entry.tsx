@@ -47,7 +47,9 @@ export const Entry = ({
           type="text"
           placeholder="Name"
           value={entry.label}
-          onChange={(e) => updateEntry(entry.id, { label: e.target.value })}
+          onChange={(e) => {
+            updateEntry(entry.id, { label: e.target.value });
+          }}
         />
 
         <input
@@ -60,13 +62,25 @@ export const Entry = ({
         <select
           value={entry.tz}
           onChange={(e) => {
-            updateEntry(entry.id, { tz: e.target.value });
+            const offset = searchableZones.find(
+              (zone) => zone.zoneName === e.target.value
+            )?.offsetInMinutes;
+            updateEntry(entry.id, {
+              tz: e.target.value,
+              offsetInMinutes: offset,
+            });
           }}
           onClick={(e) => {
             // workaround for if the dropdown only has one option
             // it won't fire onChange, so force it via click
+            const selection = (e.target as HTMLSelectElement).value;
+            const offset = searchableZones.find(
+              (zone) => zone.zoneName === selection
+            )?.offsetInMinutes;
+
             updateEntry(entry.id, {
-              tz: (e.target as HTMLSelectElement).value,
+              tz: selection,
+              offsetInMinutes: offset,
             });
           }}
         >
@@ -95,7 +109,7 @@ export const Entry = ({
         </div>
         <div className="tz-info">{entry.tz}</div>
 
-        <div className="timeline" aria-hidden ref={register}>
+        <div className="timeline" ref={register}>
           {Array.from({ length: HOUR_RANGE }).map((_, i) => {
             const dt = DateTime.fromMillis(now)
               .setZone(entry.tz)

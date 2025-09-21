@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DateTime } from "luxon";
 import { useSyncedScroll } from "./useSynchronizedScroll";
 import { getTimeZones } from "@vvo/tzdb";
@@ -9,12 +9,14 @@ export type Entry = {
   tz: string;
   label: string;
   query: string;
+  offsetInMinutes: number;
 };
 
 export type SearchableZone = {
   zoneName: string;
   city: string;
   display: string;
+  offsetInMinutes: number;
 };
 
 const STORAGE_KEY = "timezones:data";
@@ -25,6 +27,7 @@ function defaultEntry(): Entry {
     tz: DateTime.local().zoneName,
     label: "Local",
     query: "",
+    offsetInMinutes: 0,
   };
 }
 
@@ -41,7 +44,7 @@ function decodeState(s: string) {
   }
 }
 
-const timezones = getTimeZones();
+const timezones = getTimeZones({ includeUtc: true });
 
 export default function App(): JSX.Element {
   const register = useSyncedScroll<HTMLDivElement>();
@@ -68,6 +71,7 @@ export default function App(): JSX.Element {
       zoneName: tz.name,
       city,
       display: `${city} (${tz.alternativeName || tz.name})`,
+      offsetInMinutes: tz.rawOffsetInMinutes,
     }))
   );
 
@@ -77,19 +81,27 @@ export default function App(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (saveTimer.current) window.clearTimeout(saveTimer.current);
-    saveTimer.current = window.setTimeout(() => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     }, 250);
     return () => {
-      if (saveTimer.current) window.clearTimeout(saveTimer.current);
+      if (saveTimer.current) {
+        clearTimeout(saveTimer.current);
+      }
     };
   }, [entries]);
 
   function addEntry() {
     setEntries((e) => [
       ...e,
-      { id: Date.now().toString(36), tz: "UTC", label: "", query: "" },
+      {
+        id: Date.now().toString(36),
+        tz: "UTC",
+        label: "",
+        query: "",
+        offsetInMinutes: 0,
+      },
     ]);
   }
 
@@ -107,6 +119,12 @@ export default function App(): JSX.Element {
     navigator.clipboard.writeText(url);
     return url;
   }
+
+  const sortedEntries = useMemo(() => {
+    return entries.sort((a, b) => {
+      return a.offsetInMinutes - b.offsetInMinutes;
+    });
+  }, [entries]);
 
   return (
     <>
@@ -138,7 +156,7 @@ export default function App(): JSX.Element {
 
       <main>
         <div className="columns">
-          {entries.map((entry) => (
+          {sortedEntries.map((entry) => (
             <Entry
               key={entry.id}
               entry={entry}
