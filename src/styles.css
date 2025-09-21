@@ -130,3 +130,9 @@ input:not:first-child {
   font-weight: 600;
   margin-top: 4px;
 }
+
+.day-boundary,
+.day-boundary > p {
+  background: #d2600f;
+  color: var(--bg);
+}

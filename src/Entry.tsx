@@ -114,18 +114,19 @@ export const Entry = ({
             const dt = DateTime.fromMillis(now)
               .setZone(entry.tz)
               .plus({ hours: i });
-            const label = dt.toFormat("HH:mm");
+            const hour = dt.toFormat("ha");
+            const hoursAndMinutes = dt.toFormat("HH:mm");
             return (
               <button
                 className={`block ${
                   i === selectedHourIndex ? "block-current" : ""
-                }`}
+                } ${hour === "12AM" ? "day-boundary" : ""}`}
                 key={i}
                 title={dt.toISO() || ""}
                 onClick={() => setSelectedHourIndex(i)}
               >
-                <p className="block-time">{label}</p>
-                <p className="block-hour">{dt.toFormat("ha")}</p>
+                <p className="block-time">{hoursAndMinutes}</p>
+                <p className="block-hour">{hour}</p>
               </button>
             );
           })}
