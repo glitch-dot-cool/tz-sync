@@ -13,7 +13,7 @@ interface EntryProps {
   setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const HOUR_RANGE = 24;
+const HOUR_RANGE = 48;
 
 export const Entry = ({
   entry,
