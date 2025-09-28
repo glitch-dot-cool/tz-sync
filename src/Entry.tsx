@@ -42,7 +42,7 @@ export const Entry = ({
 
   return (
     <div className="card">
-      <div className="card-header">
+      <div className="card-header sticky">
         <input
           type="text"
           placeholder="Name"
