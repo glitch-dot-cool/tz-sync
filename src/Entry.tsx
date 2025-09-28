@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Entry as EntryType, SearchableZone } from "./App";
-import { DateTime } from "luxon";
+import { Timeline } from "./TImeline";
 
 interface EntryProps {
   entry: EntryType;
@@ -12,8 +12,6 @@ interface EntryProps {
   selectedHourIndex: number;
   setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
 }
-
-const HOUR_RANGE = 48;
 
 export const Entry = ({
   entry,
@@ -101,37 +99,13 @@ export const Entry = ({
           Delete
         </button>
       </div>
-      <div className="card-body">
-        <div className="time">
-          {DateTime.fromMillis(now)
-            .setZone(entry.tz)
-            .toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}
-        </div>
-        <div className="tz-info">{entry.tz}</div>
-
-        <div className="timeline" ref={register}>
-          {Array.from({ length: HOUR_RANGE }).map((_, i) => {
-            const dt = DateTime.fromMillis(now)
-              .setZone(entry.tz)
-              .plus({ hours: i });
-            const hour = dt.toFormat("ha");
-            const hoursAndMinutes = dt.toFormat("HH:mm");
-            return (
-              <button
-                className={`block ${
-                  i === selectedHourIndex ? "block-current" : ""
-                } ${hour === "12AM" ? "day-boundary" : ""}`}
-                key={i}
-                title={dt.toISO() || ""}
-                onClick={() => setSelectedHourIndex(i)}
-              >
-                <p className="block-time">{hoursAndMinutes}</p>
-                <p className="block-hour">{hour}</p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <Timeline
+        entry={entry}
+        register={register}
+        now={now}
+        selectedHourIndex={selectedHourIndex}
+        setSelectedHourIndex={setSelectedHourIndex}
+      />
     </div>
   );
 };
