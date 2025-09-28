@@ -4,6 +4,7 @@ import { useSyncedScroll } from "./useSynchronizedScroll";
 import { getTimeZones } from "@vvo/tzdb";
 import { Entry } from "./Entry";
 import { Controls } from "./Controls";
+import { ViewMode } from "./ViewMode";
 
 export type Entry = {
   id: string;
@@ -113,21 +114,35 @@ export default function App(): JSX.Element {
       </header>
 
       <main>
-        <div className="columns">
-          {entries.map((entry) => (
-            <Entry
-              key={entry.id}
-              entry={entry}
-              searchableZones={searchableZones}
-              updateEntry={updateEntry}
-              removeEntry={removeEntry}
-              register={register}
+        {mode === "view" && (
+          <div className="columns">
+            <ViewMode
+              entries={entries}
               now={now}
               selectedHourIndex={selectedHourIndex}
               setSelectedHourIndex={setSelectedHourIndex}
             />
-          ))}
-        </div>
+          </div>
+        )}
+
+        {mode === "edit" && (
+          <div className="columns">
+            {entries.map((entry) => (
+              <Entry
+                key={entry.id}
+                mode={mode}
+                entry={entry}
+                searchableZones={searchableZones}
+                updateEntry={updateEntry}
+                removeEntry={removeEntry}
+                register={register}
+                now={now}
+                selectedHourIndex={selectedHourIndex}
+                setSelectedHourIndex={setSelectedHourIndex}
+              />
+            ))}
+          </div>
+        )}
       </main>
     </>
   );

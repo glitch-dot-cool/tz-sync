@@ -97,13 +97,21 @@ input:not:first-child {
   color: red;
 }
 
+.view-mode-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 /* Timeline styles */
 .timeline {
   display: flex;
   gap: 6px;
   margin-top: 10px;
-  overflow-x: auto;
   padding-bottom: 6px;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
 }
 
 .block {

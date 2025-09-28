@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
-import { Entry } from "./App";
+import { Entry, Modes } from "./App";
 
 interface TimelineProps {
   entry: Entry;
-  register: (el: HTMLDivElement | null) => void;
+  mode: Modes;
+  register?: (el: HTMLDivElement | null) => void;
   now: number;
   selectedHourIndex: number;
   setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -13,11 +14,14 @@ const HOUR_RANGE = 48;
 
 export const Timeline = ({
   now,
+  mode,
   entry,
   register,
   selectedHourIndex,
   setSelectedHourIndex,
 }: TimelineProps) => {
+  const timelineScrollBehaviorClass = mode === "edit" ? "overflow-x-auto" : "";
+
   return (
     <div className="card-body">
       <div className="time">
@@ -27,7 +31,7 @@ export const Timeline = ({
       </div>
       <div className="tz-info">{entry.tz}</div>
 
-      <div className="timeline" ref={register}>
+      <div className={`timeline ${timelineScrollBehaviorClass}`} ref={register}>
         {Array.from({ length: HOUR_RANGE }).map((_, i) => {
           const dt = DateTime.fromMillis(now)
             .setZone(entry.tz)

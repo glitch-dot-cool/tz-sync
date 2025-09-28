@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Entry as EntryType, SearchableZone } from "./App";
+import { Entry as EntryType, Modes, SearchableZone } from "./App";
 import { Timeline } from "./TImeline";
 
 interface EntryProps {
   entry: EntryType;
+  mode: Modes;
   updateEntry: (id: string, patch: Partial<EntryType>) => void;
   removeEntry: (id: string) => void;
   searchableZones: SearchableZone[];
@@ -15,6 +16,7 @@ interface EntryProps {
 
 export const Entry = ({
   entry,
+  mode,
   searchableZones,
   updateEntry,
   removeEntry,
@@ -101,6 +103,7 @@ export const Entry = ({
       </div>
       <Timeline
         entry={entry}
+        mode={mode}
         register={register}
         now={now}
         selectedHourIndex={selectedHourIndex}
