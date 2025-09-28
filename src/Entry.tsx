@@ -8,7 +8,6 @@ interface EntryProps {
   updateEntry: (id: string, patch: Partial<EntryType>) => void;
   removeEntry: (id: string) => void;
   searchableZones: SearchableZone[];
-  register: (el: HTMLDivElement | null) => void;
   now: number;
   selectedHourIndex: number;
   setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -20,7 +19,6 @@ export const Entry = ({
   searchableZones,
   updateEntry,
   removeEntry,
-  register,
   now,
   selectedHourIndex,
   setSelectedHourIndex,
@@ -104,7 +102,6 @@ export const Entry = ({
       <Timeline
         entry={entry}
         mode={mode}
-        register={register}
         now={now}
         selectedHourIndex={selectedHourIndex}
         setSelectedHourIndex={setSelectedHourIndex}

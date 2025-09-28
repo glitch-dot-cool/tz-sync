@@ -5,7 +5,6 @@ import { Info } from "./Info";
 interface TimelineProps {
   entry: Entry;
   mode: Modes;
-  register?: (el: HTMLDivElement | null) => void;
   now: number;
   selectedHourIndex: number;
   setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -17,7 +16,6 @@ export const Timeline = ({
   now,
   mode,
   entry,
-  register,
   selectedHourIndex,
   setSelectedHourIndex,
 }: TimelineProps) => {
@@ -29,7 +27,7 @@ export const Timeline = ({
     <div className={`card-body ${timelineVerticalPaddingClass}`}>
       <Info entry={entry} now={now} mode={mode} />
 
-      <div className={`timeline ${timelineScrollBehaviorClass}`} ref={register}>
+      <div className={`timeline ${timelineScrollBehaviorClass}`}>
         {Array.from({ length: HOUR_RANGE }).map((_, i) => {
           const dt = DateTime.fromMillis(now)
             .setZone(entry.tz)

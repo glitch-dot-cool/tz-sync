@@ -47,7 +47,6 @@ export function defaultEntry(): Entry {
 }
 
 export default function App(): JSX.Element {
-  const register = useSyncedScroll<HTMLDivElement>();
   const [now, setNow] = useState<number>(Date.now());
   const [selectedHourIndex, setSelectedHourIndex] = useState(0);
   const [mode, setMode] = useState<Modes>("view");
@@ -136,7 +135,6 @@ export default function App(): JSX.Element {
                 searchableZones={searchableZones}
                 updateEntry={updateEntry}
                 removeEntry={removeEntry}
-                register={register}
                 now={now}
                 selectedHourIndex={selectedHourIndex}
                 setSelectedHourIndex={setSelectedHourIndex}
