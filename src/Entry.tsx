@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Entry as EntryType, Modes, SearchableZone } from "./App";
 import { Timeline } from "./TImeline";
+import { TimezoneSelect } from "./TimezoneSelect";
 
 interface EntryProps {
   entry: EntryType;
@@ -23,21 +23,6 @@ export const Entry = ({
   selectedHourIndex,
   setSelectedHourIndex,
 }: EntryProps) => {
-  const [filter, setFilter] = useState<string>("");
-
-  function searchZones(query: string): SearchableZone[] {
-    if (!query) return searchableZones;
-
-    const lower = query.toLowerCase();
-
-    return searchableZones.filter(
-      (z) =>
-        z.city.toLowerCase().includes(lower) ||
-        z.zoneName.toLowerCase().includes(lower) ||
-        z.display.toLowerCase().includes(lower)
-    );
-  }
-
   return (
     <div className="card">
       <div className="card-header sticky">
@@ -50,44 +35,14 @@ export const Entry = ({
           }}
         />
 
-        <input
-          type="text"
-          placeholder="Search by city or timezone..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-
-        <select
+        <TimezoneSelect
           value={entry.tz}
-          onChange={(e) => {
-            const offset = searchableZones.find(
-              (zone) => zone.zoneName === e.target.value
-            )?.offsetInMinutes;
-            updateEntry(entry.id, {
-              tz: e.target.value,
-              offsetInMinutes: offset,
-            });
-          }}
-          onClick={(e) => {
-            // workaround for if the dropdown only has one option
-            // it won't fire onChange, so force it via click
-            const selection = (e.target as HTMLSelectElement).value;
-            const offset = searchableZones.find(
-              (zone) => zone.zoneName === selection
-            )?.offsetInMinutes;
-
-            updateEntry(entry.id, {
-              tz: selection,
-              offsetInMinutes: offset,
-            });
-          }}
-        >
-          {searchZones(filter).map((z) => (
-            <option key={z.zoneName + z.city} value={z.zoneName}>
-              {z.display}
-            </option>
-          ))}
-        </select>
+          zones={searchableZones}
+          onChange={(tz, offsetInMinutes) =>
+            updateEntry(entry.id, { tz, offsetInMinutes })
+          }
+          placeholder="Search by city or timezone..."
+        />
         <button
           className="destructive"
           onClick={() => {

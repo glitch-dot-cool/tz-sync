@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { DateTime } from "luxon";
-import { useSyncedScroll } from "./useSynchronizedScroll";
 import { getTimeZones } from "@vvo/tzdb";
 import { Entry } from "./Entry";
 import { Controls } from "./Controls";
@@ -49,7 +48,7 @@ export function defaultEntry(): Entry {
 export default function App(): JSX.Element {
   const [now, setNow] = useState<number>(Date.now());
   const [selectedHourIndex, setSelectedHourIndex] = useState(0);
-  const [mode, setMode] = useState<Modes>("view");
+  const [mode, setMode] = useState<Modes>("edit");
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");

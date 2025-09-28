@@ -70,14 +70,22 @@ input:not:first-child {
 
 .card-header {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card-header input {
+  max-width: 30ch;
 }
 
 .card-header input,
 .card-header select {
   flex: 1;
   min-width: 10ch;
+}
+
+.card-header .destructive {
+  margin-left: auto;
 }
 
 .card-body {
