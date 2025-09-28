@@ -82,6 +82,8 @@ input:not:first-child {
 
 .card-body {
   font-size: 14px;
+  /* needed to enable horizontal sticky scroll */
+  width: max-content;
 }
 
 .time {
@@ -116,6 +118,13 @@ input:not:first-child {
 
 .vertical-spacing {
   padding-bottom: 1rem;
+}
+
+.sticky {
+  position: sticky;
+  left: 0;
+  /* inherit width from parent to enable horizontal sticky scroll */
+  width: inherit;
 }
 
 .block {
