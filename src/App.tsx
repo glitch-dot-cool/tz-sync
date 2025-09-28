@@ -48,7 +48,7 @@ export function defaultEntry(): Entry {
 export default function App(): JSX.Element {
   const [now, setNow] = useState<number>(Date.now());
   const [selectedHourIndex, setSelectedHourIndex] = useState(0);
-  const [mode, setMode] = useState<Modes>("edit");
+  const [mode, setMode] = useState<Modes>("view");
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
