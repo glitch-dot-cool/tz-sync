@@ -118,6 +118,7 @@ export default function App(): JSX.Element {
           <div className="columns">
             <ViewMode
               entries={entries}
+              mode={mode}
               now={now}
               selectedHourIndex={selectedHourIndex}
               setSelectedHourIndex={setSelectedHourIndex}

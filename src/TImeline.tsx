@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { Entry, Modes } from "./App";
+import { Info } from "./Info";
 
 interface TimelineProps {
   entry: Entry;
@@ -21,15 +22,12 @@ export const Timeline = ({
   setSelectedHourIndex,
 }: TimelineProps) => {
   const timelineScrollBehaviorClass = mode === "edit" ? "overflow-x-auto" : "";
+  const timelineVerticalPaddingClass =
+    mode === "view" ? "vertical-spacing" : "";
 
   return (
-    <div className="card-body">
-      <div className="time">
-        {DateTime.fromMillis(now)
-          .setZone(entry.tz)
-          .toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}
-      </div>
-      <div className="tz-info">{entry.tz}</div>
+    <div className={`card-body ${timelineVerticalPaddingClass}`}>
+      <Info entry={entry} now={now} mode={mode} />
 
       <div className={`timeline ${timelineScrollBehaviorClass}`} ref={register}>
         {Array.from({ length: HOUR_RANGE }).map((_, i) => {

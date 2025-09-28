@@ -1,4 +1,4 @@
-import { Entry } from "./App";
+import { Entry, Modes } from "./App";
 import { Timeline } from "./TImeline";
 
 interface ViewModeProps {
@@ -6,6 +6,7 @@ interface ViewModeProps {
   now: number;
   selectedHourIndex: number;
   setSelectedHourIndex: React.Dispatch<React.SetStateAction<number>>;
+  mode: Modes;
 }
 
 export const ViewMode = ({
@@ -13,6 +14,7 @@ export const ViewMode = ({
   now,
   selectedHourIndex,
   setSelectedHourIndex,
+  mode,
 }: ViewModeProps) => {
   return (
     <div className="view-mode-container">
@@ -20,6 +22,7 @@ export const ViewMode = ({
         return (
           <Timeline
             key={entry.id}
+            mode={mode}
             entry={entry}
             now={now}
             selectedHourIndex={selectedHourIndex}

@@ -114,6 +114,10 @@ input:not:first-child {
   overflow-x: auto;
 }
 
+.vertical-spacing {
+  padding-bottom: 1rem;
+}
+
 .block {
   min-width: 56px;
   border-radius: 6px;
