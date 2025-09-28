@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { useSyncedScroll } from "./useSynchronizedScroll";
 import { getTimeZones } from "@vvo/tzdb";
 import { Entry } from "./Entry";
+import { Controls } from "./Controls";
 
 export type Entry = {
   id: string;
@@ -19,21 +20,9 @@ export type SearchableZone = {
   offsetInMinutes: number;
 };
 
-const STORAGE_KEY = "timezones:data";
+export type Modes = "view" | "edit";
 
-function defaultEntry(): Entry {
-  return {
-    id: Date.now().toString(36),
-    tz: DateTime.local().zoneName,
-    label: "Local",
-    query: "",
-    offsetInMinutes: 0,
-  };
-}
-
-function encodeState(data: Entry[]) {
-  return encodeURIComponent(btoa(JSON.stringify(data)));
-}
+export const STORAGE_KEY = "timezones:data";
 
 function decodeState(s: string) {
   try {
@@ -46,10 +35,21 @@ function decodeState(s: string) {
 
 const timezones = getTimeZones({ includeUtc: true });
 
+export function defaultEntry(): Entry {
+  return {
+    id: Date.now().toString(36),
+    tz: DateTime.local().zoneName,
+    label: "Local",
+    query: "",
+    offsetInMinutes: 0,
+  };
+}
+
 export default function App(): JSX.Element {
   const register = useSyncedScroll<HTMLDivElement>();
   const [now, setNow] = useState<number>(Date.now());
   const [selectedHourIndex, setSelectedHourIndex] = useState(0);
+  const [mode, setMode] = useState<Modes>("view");
   const [entries, setEntries] = useState<Entry[]>(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get("data");
@@ -92,19 +92,6 @@ export default function App(): JSX.Element {
     };
   }, [entries]);
 
-  function addEntry() {
-    setEntries((e) => [
-      ...e,
-      {
-        id: Date.now().toString(36),
-        tz: "UTC",
-        label: "",
-        query: "",
-        offsetInMinutes: 0,
-      },
-    ]);
-  }
-
   function updateEntry(id: string, patch: Partial<Entry>) {
     setEntries((e) => e.map((x) => (x.id === id ? { ...x, ...patch } : x)));
   }
@@ -113,48 +100,16 @@ export default function App(): JSX.Element {
     setEntries((e) => e.filter((x) => x.id !== id));
   }
 
-  function shareUrl() {
-    const data = encodeState(entries);
-    const url = `${location.origin}${location.pathname}?data=${data}`;
-    navigator.clipboard.writeText(url);
-    return url;
-  }
-
-  const sortEntries = () => {
-    setEntries((entries) =>
-      entries.sort((a, b) => {
-        return a.offsetInMinutes - b.offsetInMinutes;
-      })
-    );
-  };
-
   return (
     <>
       <header>
         <h1>Timezones</h1>
-        <div className="controls">
-          <button onClick={addEntry}>Add entry</button>
-          <button onClick={sortEntries}>Sort</button>
-          <button
-            onClick={() => {
-              const url = shareUrl();
-              alert("Copied share URL to clipboard:\n" + url);
-            }}
-          >
-            Share
-          </button>
-          <button
-            className="destructive"
-            onClick={() => {
-              if (confirm("are you sure you want to reset all entries?")) {
-                localStorage.removeItem(STORAGE_KEY);
-                setEntries([defaultEntry()]);
-              }
-            }}
-          >
-            Reset
-          </button>
-        </div>
+        <Controls
+          mode={mode}
+          setMode={setMode}
+          entries={entries}
+          setEntries={setEntries}
+        />
       </header>
 
       <main>
