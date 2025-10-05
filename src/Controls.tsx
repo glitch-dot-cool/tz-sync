@@ -45,7 +45,7 @@ export const Controls = memo(
     if (mode === "edit") {
       return (
         <div className="controls">
-          <button onClick={addEntry}>Add entry</button>
+          <button onClick={addEntry}>Add</button>
           <button onClick={sortEntries}>Sort</button>
           <button
             onClick={() => {
