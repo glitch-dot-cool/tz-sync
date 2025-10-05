@@ -7,6 +7,8 @@
   --muted: #4b4b4b;
   --text: #c4c4c4;
   --light: #e6e6e6;
+  --default-padding-x: 1.5rem;
+  --mobile-padding-x: 0.25rem;
 }
 
 * {
@@ -19,33 +21,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  padding: 1.5rem 3rem;
-}
-
-@media (max-width: 400px) {
-  body {
-    padding: 0.25rem 0.5rem;
-  }
-
-  h1 {
-    display: none;
-  }
-
-  .controls {
-    font-size: 12px;
-    margin-top: 0.5rem;
-
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  /* remove margin from desktop view */
-  .controls button {
-    margin-left: 0px !important;
-  }
+  padding: var(--default-padding-x) 3rem;
 }
 
 button,
@@ -120,6 +96,12 @@ input:not:first-child {
   width: max-content;
 }
 
+.info-details {
+  display: flex;
+  justify-content: space-between;
+  width: calc(100vw - calc(var(--default-padding-x) * 4));
+}
+
 .time {
   font-weight: 600;
 }
@@ -190,4 +172,36 @@ input:not:first-child {
 .day-boundary > p {
   background: #d2600f;
   color: var(--bg);
+}
+
+@media (max-width: 500px) {
+  body {
+    padding: var(--mobile-padding-x) 0.5rem;
+  }
+
+  h1 {
+    display: none;
+  }
+
+  .controls {
+    font-size: 12px;
+    margin-top: 0.5rem;
+
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* remove margin from desktop view */
+  .controls button {
+    margin-left: 0px;
+  }
+
+  .info-details {
+    flex-direction: row;
+    justify-content: space-between;
+    width: calc(100vw - calc(var(--mobile-padding-x) * 4));
+  }
 }

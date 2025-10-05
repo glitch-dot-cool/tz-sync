@@ -8,15 +8,21 @@ interface InfoProps {
 }
 
 export const Info = ({ entry, now, mode }: InfoProps) => {
+  const timezone = entry.tz
+    .substring(entry.tz.indexOf("/") + 1, entry.tz.length)
+    .replace("_", " ");
+
   return (
     <div className="sticky">
       {mode === "view" && <h3>{entry.label}</h3>}
-      <div className="time">
-        {DateTime.fromMillis(now)
-          .setZone(entry.tz)
-          .toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}
+      <div className="info-details">
+        <div className="time">
+          {DateTime.fromMillis(now)
+            .setZone(entry.tz)
+            .toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)}
+        </div>
+        <div className="tz-info">{timezone}</div>
       </div>
-      <div className="tz-info">{entry.tz}</div>
     </div>
   );
 };
