@@ -81,6 +81,7 @@ export const TimezoneSelect = ({
           backgroundColor: "#4b4b4b",
           padding: "4px 6px",
           fontSize: "14px",
+          minHeight: "none",
         }),
         menu: (base) => ({
           ...base,
