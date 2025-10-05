@@ -55,7 +55,6 @@ export const Controls = memo(
           >
             Share
           </button>
-          <button onClick={() => setMode("view")}>View Mode</button>
           <button
             className="destructive"
             onClick={() => {
@@ -67,6 +66,7 @@ export const Controls = memo(
           >
             Reset
           </button>
+          <button onClick={() => setMode("view")}>View Mode</button>
         </div>
       );
     }
